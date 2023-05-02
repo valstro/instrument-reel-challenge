@@ -1,30 +1,101 @@
 /**
  * ✅ You can edit this file to add your own styles.
  */
- .instrument-reel {
+
+.instrument-reel {
   overflow: hidden;
+  width: 100%;
 }
 
 .instrument-list {
   display: flex;
-  flex-wrap: nowrap;
-  animation: scroll 20s linear infinite;
+  animation: scroll 5s linear infinite;
+  animation-delay: 0.1s;
+  justify-content: space-between;
+  min-width: 220px;
+  width: 100%;
 }
 
 .instrument-item {
-  display: flex;
-  border: 1px solid #ccc;
-  padding: 10px;
-  flex: 0 0 auto;
-  width: 200px; /* sets the width of each item */
-  margin-right: 10px; /* add some space between each item */
+  border: 1px solid #d8d8d8;
+  min-width: 220px;
+  height: 40px;
+  padding: 6px;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
+/* Add styles for the instrument name and last quote  */
+.instrument-info {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Add styles for the instrument icon */
+.instrument-icon {
+  position: relative;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+}
+
+.instrument-icon img.USD {
+  margin-left: 1rem;
+  z-index: 0;
+  border-radius: 50%;
+}
+
+.instrument-icon img.EUR {
+  margin-left: 1rem;
+  border-radius: 50%;
+  z-index: 1;
+  transform: translate(
+    -15px,
+    -20px
+  ); /* adjust the amount of translation as needed */
+}
+
+.instrument-name {
+  display: flex;
+  font-weight: bold;
+  color: white;
+  white-space: nowrap;
+  margin-left: 0.5rem; /* add some space between each item */
+}
+
+.instrument-quotes {
+  display: flex;
+  font-size: 15px;
+}
+
+.instrument-quotes.positive {
+  color: rgba(102, 251, 159, 0.985);
+}
+
+.instrument-quotes.negative {
+  color: rgba(247, 89, 84, 0.985);
+}
+
+/* Add styles to pause the scrolling animation when hovering over the instrument reel */
+.instrument-reel:hover .instrument-list {
+  animation-play-state: paused;
+}
+
+/* Highlight item when mouse over */
+.instrument-item:hover {
+  box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.1);
+}
+
+/* Scroll animation */
 @keyframes scroll {
   0% {
-    transform: translateX(0);
+    transform: translateX(0%);
   }
+
   100% {
-    transform: translateX(-100%); /* negative percentage to scroll left */
+    transform: translateX(-100%);
   }
 }
