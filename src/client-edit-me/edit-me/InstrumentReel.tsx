@@ -5,9 +5,14 @@
 /**
  * ✅ You can add/edit these imports
  */
-import { InstrumentSymbol } from "../../common-leave-me";
+import {
+  Instrument,
+  InstrumentSymbol,
+  WebSocketServerMessageJson,
+} from "../../common-leave-me";
 import { InstrumentSocketClient } from "./InstrumentSocketClient";
 import "./InstrumentReel.css";
+import { useState, useEffect } from "react";
 
 /**
  * ❌ Please do not edit this
@@ -21,6 +26,26 @@ function useInstruments(instrumentSymbols: InstrumentSymbol[]) {
   /**
    * ✅ You can edit inside the body of this hook
    */
+  const [instruments, setInstruments] = useState<Instrument[]>([]);
+  useEffect(() => {
+    const handleUpdate = (message: WebSocketServerMessageJson) => {
+      if (message.type === "update") {
+        setInstruments(message.instruments);
+      }
+    };
+
+    /**
+     * ❌ subscribe not working
+     */
+
+    client.subscribe(instrumentSymbols, handleUpdate);
+
+    return () => {
+      client.unsubscribe(instrumentSymbols, handleUpdate);
+    };
+  }, [instrumentSymbols]);
+
+  return instruments;
 }
 
 export interface InstrumentReelProps {
@@ -38,7 +63,26 @@ function InstrumentReel({ instrumentSymbols }: InstrumentReelProps) {
    * Please feel free to add more components to this file or other files if you want to.
    */
 
-  return <div>Instrument Reel</div>;
+  return (
+    <div className="instrument-reel">
+      {instruments.length > 0 ? (
+        <div className="instrument-list">
+          {instruments.map((instrument: Instrument) => (
+            <div key={instrument.code} className="instrument-item">
+              <img
+                className="instrument-icon"
+                src={`../../../public/${instrument.code}.svg`}
+                alt={instrument.code}
+              />
+              {instrument.code} {instrument.lastQuote}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="loading-message">Loading instruments...</div>
+      )}
+    </div>
+  );
 }
 
 export default InstrumentReel;

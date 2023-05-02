@@ -45,19 +45,73 @@ export class InstrumentSocketClient {
    * ❌ Please do not edit this private property name
    */
   private _socket: WebSocket;
+  private _callbacks: {
+    [key: string]: (message: WebSocketServerMessageJson) => void;
+  } = {};
 
-  /**
-   * ✅ You can add more properties for the class here (if you want) 👇
-   */
+  instrumentSymbols: InstrumentSymbol[] = [];
 
+  subscribeMessage: WebSocketClientMessageJson = {
+    type: "subscribe",
+    instrumentSymbols: this.instrumentSymbols,
+  };
   constructor() {
-    /**
-     * ❌ Please do not edit this private property assignment
-     */
     this._socket = new WebSocket("ws://localhost:3000/ws");
 
-    /**
-     * ✅ You can edit from here down 👇
-     */
+    this._socket.onopen = () => {
+      this._socket.send(JSON.stringify(this.subscribeMessage));
+
+      console.log("subscribeMessage MESSAGE", this.subscribeMessage);
+    };
+
+    this._socket.onmessage = (event: MessageEvent) => {
+      const message = JSON.parse(event.data);
+      // if (message.type === "update") {
+      const callbacks = Object.values(this._callbacks);
+      console.log("INSTRUMENT callbacks", callbacks);
+      console.log("INSTRUMENT MESSAGE", message);
+
+      callbacks.forEach((callback) => callback(message));
+      // }
+    };
+  }
+
+  public subscribe(
+    instrumentSymbols: InstrumentSymbol[],
+    callback: (message: WebSocketServerMessageJson) => void
+  ) {
+    const id: string = Math.random().toString(36).substr(2, 9);
+    this._callbacks[id] = callback;
+
+    const subscribeMessage: WebSocketClientMessageJson = {
+      type: "subscribe",
+      instrumentSymbols: instrumentSymbols,
+    };
+    console.log("INSTRUMENT MESSAGE", subscribeMessage);
+
+    if (this._socket.readyState === WebSocketReadyState.OPEN) {
+      this._socket.send(JSON.stringify(subscribeMessage));
+    }
+    return id;
+  }
+
+  public unsubscribe(
+    instrumentSymbols: InstrumentSymbol[],
+    callback: (message: WebSocketServerMessageJson) => void
+  ): void {
+    const id = Object.keys(this._callbacks).find(
+      (key) => this._callbacks[key] === callback
+    );
+
+    if (id) {
+      delete this._callbacks[id];
+
+      const unsubscribeMessage: WebSocketClientMessageJson = {
+        type: "unsubscribe",
+        instrumentSymbols: instrumentSymbols,
+      };
+
+      this._socket.send(JSON.stringify(unsubscribeMessage));
+    }
   }
 }

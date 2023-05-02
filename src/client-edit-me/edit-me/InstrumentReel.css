@@ -1,3 +1,30 @@
 /**
  * ✅ You can edit this file to add your own styles.
  */
+ .instrument-reel {
+  overflow: hidden;
+}
+
+.instrument-list {
+  display: flex;
+  flex-wrap: nowrap;
+  animation: scroll 20s linear infinite;
+}
+
+.instrument-item {
+  display: flex;
+  border: 1px solid #ccc;
+  padding: 10px;
+  flex: 0 0 auto;
+  width: 200px; /* sets the width of each item */
+  margin-right: 10px; /* add some space between each item */
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%); /* negative percentage to scroll left */
+  }
+}
