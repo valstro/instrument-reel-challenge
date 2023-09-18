@@ -43,3 +43,20 @@ You have 7 days to complete this challenge, however, the challenge has been setu
 ---
 
 Good luck!
+
+## Notes
+
+Due to time constraints, tests and error handling have been left out. With more time, would have done them as follows:
+
+### Unit tests
+
+Unit tests for ReelItem component to check classes are added correctly and icons are loaded correctly
+
+### Integration tests
+
+Integration tests for FE against a mocked websocket url, checking that loading state is displayed for each given symbol and that the data from the ws is correctly displayed for each given symbol. Would also be testing that animation classes add/remove when hovering and that the change percentage is calculated correctly.
+
+### Error handling
+
+Client would be checking for errors and return them if detected, then each ReelItem would be passed any errors for its watched symbol so it can display something useful to the user (for MVP, probably just error text with a reconnecting symbol). Error for the ws connection itself and for subscription failures would be displayed instead of the reel.
+
