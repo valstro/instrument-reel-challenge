@@ -97,8 +97,8 @@ function InstrumentReel({ instrumentSymbols }: InstrumentReelProps) {
   const loopingInstruments = useMemo(() => getLoopableSymbols(instrumentSymbols), [instrumentSymbols]);
 
   return (
-    <div className='reelContainer'>
-      <div className='instrumentReel'>
+    <div className="reelContainer">
+      <div className="instrumentReel">
         {loopingInstruments.map((symbol: InstrumentSymbol, i) => {
           const {
             name,

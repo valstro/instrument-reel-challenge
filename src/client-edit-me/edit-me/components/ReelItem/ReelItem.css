@@ -1,0 +1,41 @@
+.reelItem {
+    width: 297px;
+
+    height: 60px;
+    outline: 1px solid #353944;
+    background-color: #1d212c;
+    color: white;
+}
+
+.reelItem:hover {
+    background-color: #282d39;
+}
+
+.reelItemContent {
+    display: flex;
+    justify-content: space-around;
+
+}
+
+.reelItemLabel {
+    margin-left: 0.25rem;
+}
+
+.reelItemChangeGreen {
+    margin-left: 0.25rem;
+    color: green;
+}
+
+.reelItemChangeRed {
+    margin-left: 0.25rem;
+    color: red;
+}
+
+.reelitemLogo {
+    margin-left: 0.25rem;
+    margin-top: auto;
+    margin-bottom: auto;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+}
