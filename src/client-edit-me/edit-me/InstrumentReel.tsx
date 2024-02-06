@@ -15,7 +15,6 @@ import "./InstrumentReel.css";
  * ❌ Please do not edit this
  */
 const client = new InstrumentSocketClient();
-
 /**
  * ❌ Please do not edit this hook name & args
  */
@@ -31,9 +30,7 @@ function useInstruments(instrumentSymbols: InstrumentSymbol[]) {
   );
   const [instruments, setInstruments] =
     React.useState<InstrumentReelItem[]>(pendingInstruments);
-  const [readyState, setReadyState] = React.useState<WebSocketReadyState>(
-    client.readyState
-  );
+  const [readyState, setReadyState] = React.useState<WebSocketReadyState>(0);
 
   const handleMessage = (newInstruments: any[]) => {
     setInstruments(newInstruments);
@@ -41,9 +38,9 @@ function useInstruments(instrumentSymbols: InstrumentSymbol[]) {
 
   React.useEffect(() => {
     const handleReadyStateChange = () => {
-      setReadyState(client.readyState);
+      setReadyState(client.readyState());
     };
-    handleReadyStateChange();
+    setReadyState(client.readyState());
     client.addEventListener("open", handleReadyStateChange);
     client.addEventListener("close", handleReadyStateChange);
     return () => {
@@ -64,6 +61,20 @@ function useInstruments(instrumentSymbols: InstrumentSymbol[]) {
   return instruments;
 }
 
+function useWindowWidth() {
+  const [width, setWidth] = React.useState(window.innerWidth);
+  React.useEffect(() => {
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+  return width;
+}
+
 export interface InstrumentReelProps {
   instrumentSymbols: InstrumentSymbol[];
 }
@@ -73,21 +84,32 @@ function InstrumentReel({ instrumentSymbols }: InstrumentReelProps) {
    * ❌ Please do not edit this
    */
   const instruments = useInstruments(instrumentSymbols);
-
   /**
    * ✅ You can edit from here down in this component.
    * Please feel free to add more components to this file or other files if you want to.
    */
+  const windowWidth = useWindowWidth();
+  let items: InstrumentReelItem[] = [];
+  do {
+    items = items.concat(instruments);
+  } while (items.length * 220 < windowWidth * 2);
 
   return (
-    <div className="foo">
-      {instruments.map(([symbol, lastQuote], i) => {
-        return (
-          <div key={i}>
-            {symbol}: {lastQuote}
-          </div>
-        );
-      })}
+    <div className="instrument-reel">
+      <div className="instrument-reel-track">
+        {items.map(([symbol, lastQuote], i) => {
+          const loading = lastQuote === "...";
+          const formattedQuote = parseFloat(lastQuote as string).toFixed(3);
+          return (
+            <div key={i} className="instrument">
+              <span className="instrument-name">{symbol}</span>
+              <span className={`instrument-quote ${loading ? "" : "loaded"}`}>
+                {loading ? "..." : formattedQuote}
+              </span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

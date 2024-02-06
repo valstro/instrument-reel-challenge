@@ -1,3 +1,48 @@
 /**
  * ✅ You can edit this file to add your own styles.
  */
+.instrument-reel {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.instrument-reel-track {
+  display: inline-flex;
+  animation: slide-left 15s linear infinite;
+}
+
+@keyframes slide-left {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.instrument-reel:hover .instrument-reel-track {
+  animation-play-state: paused;
+}
+
+.instrument {
+  padding: 10px;
+  display: inline-flex;
+  align-items: center;
+  border-right: 1px solid white;
+}
+
+.instrument-name {
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.instrument-quote {
+  font-family: monospace;
+  text-align: right;
+  min-width: 60px;
+}
+.instrument-quote.loaded {
+  min-width: 30px;
+  transition: min-width 0.5s;
+}

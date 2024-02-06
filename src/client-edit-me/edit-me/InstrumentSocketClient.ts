@@ -36,7 +36,6 @@ import {
       instruments: Instrument[];
     };
  */
-const DEBUGGING = true;
 /**
  * ❌ Please do not edit this class name
  */
@@ -51,7 +50,6 @@ export class InstrumentSocketClient {
    */
 
   private _subscriptions: Map<any, any>;
-  static sockets: WebSocket[] = [];
 
   constructor() {
     /**
@@ -61,44 +59,17 @@ export class InstrumentSocketClient {
     // note: even though this is instantiated once in module scope in the component tsx file,
     // hot reloads rerun that file, causing multiple sockets to be created and not removed
     this._socket = new WebSocket("ws://localhost:3000/ws");
-
     /**
      * ✅ You can edit from here down 👇
      */
-    this.globalListeners.forEach(([eventType, callback]) => {
-      this._socket.addEventListener(eventType, callback);
-    });
-    InstrumentSocketClient.sockets.push(this._socket);
-
     this._subscriptions = new Map();
   }
 
-  // DEBUGGING
-  private globalListeners: any[] = [
-    // ["open", () => console.log("websocket open")],
-    DEBUGGING && [
-      "message",
-      (event: MessageEvent) =>
-        console.log(
-          "Message from server ",
-          JSON.parse(event.data).instruments.map((i: any) => i.code)
-        ),
-    ],
-  ].filter((l) => l) as any[];
-
   close() {
-    if (DEBUGGING) {
-      this.globalListeners.forEach(([eventType, callback]) => {
-        this._socket.removeEventListener(eventType, callback);
-      });
-      InstrumentSocketClient.sockets = InstrumentSocketClient.sockets.filter(
-        (socket) => socket !== this._socket
-      );
-    }
     this._socket.close();
   }
 
-  get readyState(): WebSocketReadyState {
+  readyState(): WebSocketReadyState {
     return this._socket.readyState;
   }
 
@@ -114,6 +85,7 @@ export class InstrumentSocketClient {
   }
 
   addEventListener(eventType: string, callback: (event: Event) => void) {
+    console.log("adding event listener", eventType, this._socket.readyState);
     this._socket.addEventListener(eventType, callback);
   }
 
