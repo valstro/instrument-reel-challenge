@@ -11,13 +11,17 @@
   display: inline-flex;
   animation: slide-left 15s linear infinite;
 }
+.instrument-reel-backfill {
+  position: absolute;
+  left: 100%;
+}
 
 @keyframes slide-left {
   from {
     transform: translateX(0%);
   }
   to {
-    transform: translateX(-50%);
+    transform: translateX(-100%);
   }
 }
 

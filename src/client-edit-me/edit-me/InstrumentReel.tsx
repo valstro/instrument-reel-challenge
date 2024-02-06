@@ -19,8 +19,6 @@ const client = new InstrumentSocketClient();
  * ❌ Please do not edit this hook name & args
  */
 
-type InstrumentReelItem = [InstrumentSymbol, number | string];
-
 function useInstruments(instrumentSymbols: InstrumentSymbol[]) {
   /**
    * ✅ You can edit inside the body of this hook
@@ -61,7 +59,7 @@ function useInstruments(instrumentSymbols: InstrumentSymbol[]) {
   return instruments;
 }
 
-function useWindowWidth() {
+function usePaddedItems(instruments: InstrumentReelItem[]) {
   const [width, setWidth] = React.useState(window.innerWidth);
   React.useEffect(() => {
     const handleResize = () => {
@@ -72,13 +70,32 @@ function useWindowWidth() {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  return width;
+  let items: InstrumentReelItem[] = [];
+  do {
+    items = items.concat(instruments);
+  } while (items.length * 220 < width * 2);
+  return items;
 }
 
 export interface InstrumentReelProps {
   instrumentSymbols: InstrumentSymbol[];
 }
 
+type InstrumentReelItem = [InstrumentSymbol, number | string];
+
+function InstrumentReelItem({ item }: { item: InstrumentReelItem }) {
+  const [symbol, lastQuote] = item;
+  const loading = lastQuote === "...";
+  const formattedQuote = parseFloat(lastQuote as string).toFixed(3);
+  return (
+    <div className="instrument">
+      <span className="instrument-name">{symbol}</span>
+      <span className={`instrument-quote ${loading ? "" : "loaded"}`}>
+        {loading ? "..." : formattedQuote}
+      </span>
+    </div>
+  );
+}
 function InstrumentReel({ instrumentSymbols }: InstrumentReelProps) {
   /**
    * ❌ Please do not edit this
@@ -88,27 +105,19 @@ function InstrumentReel({ instrumentSymbols }: InstrumentReelProps) {
    * ✅ You can edit from here down in this component.
    * Please feel free to add more components to this file or other files if you want to.
    */
-  const windowWidth = useWindowWidth();
-  let items: InstrumentReelItem[] = [];
-  do {
-    items = items.concat(instruments);
-  } while (items.length * 220 < windowWidth * 2);
+  const items = usePaddedItems(instruments);
 
   return (
     <div className="instrument-reel">
       <div className="instrument-reel-track">
-        {items.map(([symbol, lastQuote], i) => {
-          const loading = lastQuote === "...";
-          const formattedQuote = parseFloat(lastQuote as string).toFixed(3);
-          return (
-            <div key={i} className="instrument">
-              <span className="instrument-name">{symbol}</span>
-              <span className={`instrument-quote ${loading ? "" : "loaded"}`}>
-                {loading ? "..." : formattedQuote}
-              </span>
-            </div>
-          );
-        })}
+        {items.map((item, i) => (
+          <InstrumentReelItem key={i} item={item} />
+        ))}
+        <div className="instrument-reel-backfill">
+          {items.map((item, i) => (
+            <InstrumentReelItem key={i} item={item} />
+          ))}
+        </div>
       </div>
     </div>
   );
