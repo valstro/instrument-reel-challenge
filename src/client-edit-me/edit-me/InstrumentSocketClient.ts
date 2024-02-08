@@ -49,8 +49,6 @@ export class InstrumentSocketClient {
    * ✅ You can add more properties for the class here (if you want) 👇
    */
 
-  private _subscriptions: Map<any, any>;
-
   constructor() {
     /**
      * ❌ Please do not edit this private property assignment
@@ -62,7 +60,6 @@ export class InstrumentSocketClient {
     /**
      * ✅ You can edit from here down 👇
      */
-    this._subscriptions = new Map();
   }
 
   close() {
@@ -128,19 +125,7 @@ export class InstrumentSocketClient {
       const instruments: any = instrumentSymbols.map((code) => updates[code]);
       callback(instruments);
     };
-    this._subscriptions.set(callback, handler);
     this._socket.addEventListener("message", handler);
-  }
-
-  unsubscribeFromSymbolUpdates(
-    instrumentSymbols: InstrumentSymbol[],
-    callback: (newInstruments: any[]) => void
-  ) {
-    this._sendMessage({
-      type: "unsubscribe",
-      instrumentSymbols,
-    });
-    const handler = this._subscriptions.get(callback);
-    this._socket.removeEventListener("message", handler);
+    return () => this._socket.removeEventListener("message", handler);
   }
 }

@@ -56,9 +56,12 @@ function useInstruments(instrumentSymbols: InstrumentSymbol[]) {
     if (readyState !== WebSocket.OPEN) {
       return;
     }
-    client.subscribeToSymbolUpdates(instrumentSymbols, handleMessage);
+    const unsubscribe = client.subscribeToSymbolUpdates(
+      instrumentSymbols,
+      handleMessage
+    );
     return () => {
-      client.unsubscribeFromSymbolUpdates(instrumentSymbols, handleMessage);
+      unsubscribe();
     };
   }, [instrumentSymbols, readyState]);
   return instruments;
