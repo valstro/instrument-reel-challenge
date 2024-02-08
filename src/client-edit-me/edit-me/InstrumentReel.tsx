@@ -80,7 +80,7 @@ function usePaddedItems(instruments: Instrument[]) {
   let items: Instrument[] = [];
   do {
     items = items.concat(instruments);
-  } while (items.length * 500 < width * 2);
+  } while (items.length * 250 < width);
   return items;
 }
 
@@ -91,25 +91,22 @@ export interface InstrumentReelProps {
 function InstrumentReelItem({ item }: { item: DisplayableInstrument }) {
   const { code, category, name, change, lastQuote } = item;
   const loading = !lastQuote;
-  const price = lastQuote?.toFixed(3) || "...";
-  const changePercentage = change?.toFixed(2) || "...";
+  const price = lastQuote ? lastQuote.toFixed(3) : "......";
+  const changePercentage = change ? change.toFixed(3) : "0.000";
   return (
-    <div className={`instrument ${loading ? "" : "loaded"}`}>
-      <span className="instrument-icon">
-        <img src={`/${category}/${code}.svg`} />
-      </span>
-      <span className="instrument-name">{name}</span>
-      <span className={"instrument-quote"}>{price}</span>
-      <span
-        className={`instrument-change ${
-          change && change < 0 ? "negative" : "positive"
-        }`}
-      >
-        {changePercentage}
-      </span>
+    <div
+      className={`instrument ${loading ? "" : "loaded"} ${
+        change && change < 0 ? "negative" : ""
+      }`}
+    >
+      <img className="instrument-icon" src={`/${category}/${code}.svg`} />
+      <span className="instrument-name">{name || code}</span>
+      <span className="instrument-quote">{price}</span>
+      <span className="instrument-change">{changePercentage}%</span>
     </div>
   );
 }
+
 function InstrumentReel({ instrumentSymbols }: InstrumentReelProps) {
   /**
    * ❌ Please do not edit this
