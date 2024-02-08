@@ -6,11 +6,7 @@
  * ✅ You can add/edit these imports
  */
 import React, { useEffect } from "react";
-import {
-  InstrumentSymbol,
-  Instrument,
-  WebSocketReadyState,
-} from "../../common-leave-me";
+import { InstrumentSymbol, Instrument } from "../../common-leave-me";
 import { InstrumentSocketClient } from "./InstrumentSocketClient";
 
 import "./InstrumentReel.css";
@@ -23,6 +19,11 @@ const client = new InstrumentSocketClient();
  * ❌ Please do not edit this hook name & args
  */
 
+interface DisplayableInstrument extends Instrument {
+  change?: number;
+  icon?: string;
+}
+
 function useInstruments(instrumentSymbols: InstrumentSymbol[]) {
   /**
    * ✅ You can edit inside the body of this hook
@@ -30,11 +31,28 @@ function useInstruments(instrumentSymbols: InstrumentSymbol[]) {
   const pendingInstruments = instrumentSymbols.map((code) => {
     return { code };
   });
-  const [instruments, setInstruments] = React.useState<Instrument[]>(
-    pendingInstruments as Instrument[]
+  const [instruments, setInstruments] = React.useState<DisplayableInstrument[]>(
+    pendingInstruments as DisplayableInstrument[]
   );
   const handleMessage = (newInstruments: Instrument[]) => {
-    setInstruments(newInstruments);
+    setInstruments((prevInstruments) => {
+      return newInstruments.map((newInstrument) => {
+        const displayableInstrument: DisplayableInstrument = {
+          ...newInstrument,
+          change: undefined,
+        };
+        const prevInstrument = prevInstruments.find(
+          (i) => i.code === newInstrument.code
+        );
+        if (prevInstrument) {
+          displayableInstrument.change =
+            ((newInstrument.lastQuote - prevInstrument.lastQuote) /
+              prevInstrument.lastQuote) *
+            100;
+        }
+        return displayableInstrument;
+      });
+    });
   };
   useEffect(() => {
     const unsubscribe = client.subscribeToInstruments(
@@ -62,7 +80,7 @@ function usePaddedItems(instruments: Instrument[]) {
   let items: Instrument[] = [];
   do {
     items = items.concat(instruments);
-  } while (items.length * 220 < width * 2);
+  } while (items.length * 500 < width * 2);
   return items;
 }
 
@@ -70,15 +88,24 @@ export interface InstrumentReelProps {
   instrumentSymbols: InstrumentSymbol[];
 }
 
-function InstrumentReelItem({ item }: { item: Instrument }) {
-  const { code, lastQuote } = item;
+function InstrumentReelItem({ item }: { item: DisplayableInstrument }) {
+  const { code, category, name, change, lastQuote } = item;
   const loading = !lastQuote;
-  const price = loading ? "..." : lastQuote.toFixed(3);
+  const price = lastQuote?.toFixed(3) || "...";
+  const changePercentage = change?.toFixed(2) || "...";
   return (
-    <div className="instrument">
-      <span className="instrument-name">{code}</span>
-      <span className={`instrument-quote ${loading ? "" : "loaded"}`}>
-        {price}
+    <div className={`instrument ${loading ? "" : "loaded"}`}>
+      <span className="instrument-icon">
+        <img src={`/${category}/${code}.svg`} />
+      </span>
+      <span className="instrument-name">{name}</span>
+      <span className={"instrument-quote"}>{price}</span>
+      <span
+        className={`instrument-change ${
+          change && change < 0 ? "negative" : "positive"
+        }`}
+      >
+        {changePercentage}
       </span>
     </div>
   );

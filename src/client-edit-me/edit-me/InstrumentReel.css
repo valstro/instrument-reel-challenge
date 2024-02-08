@@ -46,7 +46,22 @@
   text-align: right;
   min-width: 60px;
 }
-.instrument-quote.loaded {
+.instrument-icon img {
+  width: 18px;
+  height: 18px;
+  margin-right: 10px;
+}
+.instrument-change {
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 45px;
+  text-align: right;
+  color: green;
+}
+.instrument-change.negative {
+  color: red;
+}
+instrument.loaded .instrument-quote {
   min-width: 30px;
   transition: min-width 0.5s;
 }
