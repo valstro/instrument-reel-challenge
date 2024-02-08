@@ -77,11 +77,9 @@ export class InstrumentSocketClient {
     this._socket.send(JSON.stringify(message));
   }
 
-  private _parseInstrumentsMessage(data: any) {
-    const message = JSON.parse(data);
-    return Object.fromEntries(
-      message.instruments.map((i: any) => [i.code, i.lastQuote])
-    );
+  private _parseInstrumentsMessage(data: string) {
+    const message: WebSocketServerMessageJson = JSON.parse(data);
+    return Object.fromEntries(message.instruments.map((i: any) => [i.code, i]));
   }
 
   addEventListener(eventType: string, callback: (event: Event) => void) {
@@ -119,7 +117,7 @@ export class InstrumentSocketClient {
   // }
   subscribeToSymbolUpdates(
     instrumentSymbols: InstrumentSymbol[],
-    callback: (newInstruments: any[]) => void
+    callback: (instruments: Instrument[]) => void
   ) {
     this._sendMessage({
       type: "subscribe",
@@ -127,11 +125,8 @@ export class InstrumentSocketClient {
     });
     const handler = (event: any) => {
       const updates = this._parseInstrumentsMessage(event.data);
-      const newInstruments: any = instrumentSymbols.map((symbol) => [
-        symbol,
-        updates[symbol],
-      ]);
-      callback(newInstruments);
+      const instruments: any = instrumentSymbols.map((code) => updates[code]);
+      callback(instruments);
     };
     this._subscriptions.set(callback, handler);
     this._socket.addEventListener("message", handler);

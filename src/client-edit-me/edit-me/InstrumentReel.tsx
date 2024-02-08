@@ -6,7 +6,11 @@
  * ✅ You can add/edit these imports
  */
 import React from "react";
-import { InstrumentSymbol, WebSocketReadyState } from "../../common-leave-me";
+import {
+  InstrumentSymbol,
+  Instrument,
+  WebSocketReadyState,
+} from "../../common-leave-me";
 import { InstrumentSocketClient } from "./InstrumentSocketClient";
 
 import "./InstrumentReel.css";
@@ -23,14 +27,15 @@ function useInstruments(instrumentSymbols: InstrumentSymbol[]) {
   /**
    * ✅ You can edit inside the body of this hook
    */
-  const pendingInstruments = instrumentSymbols.map(
-    (symbol) => [symbol, "..."] as InstrumentReelItem
+  const pendingInstruments = instrumentSymbols.map((code) => {
+    return { code };
+  });
+  const [instruments, setInstruments] = React.useState<Instrument[]>(
+    pendingInstruments as Instrument[]
   );
-  const [instruments, setInstruments] =
-    React.useState<InstrumentReelItem[]>(pendingInstruments);
   const [readyState, setReadyState] = React.useState<WebSocketReadyState>(0);
 
-  const handleMessage = (newInstruments: any[]) => {
+  const handleMessage = (newInstruments: Instrument[]) => {
     setInstruments(newInstruments);
   };
 
@@ -59,7 +64,7 @@ function useInstruments(instrumentSymbols: InstrumentSymbol[]) {
   return instruments;
 }
 
-function usePaddedItems(instruments: InstrumentReelItem[]) {
+function usePaddedItems(instruments: Instrument[]) {
   const [width, setWidth] = React.useState(window.innerWidth);
   React.useEffect(() => {
     const handleResize = () => {
@@ -70,7 +75,7 @@ function usePaddedItems(instruments: InstrumentReelItem[]) {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  let items: InstrumentReelItem[] = [];
+  let items: Instrument[] = [];
   do {
     items = items.concat(instruments);
   } while (items.length * 220 < width * 2);
@@ -81,17 +86,16 @@ export interface InstrumentReelProps {
   instrumentSymbols: InstrumentSymbol[];
 }
 
-type InstrumentReelItem = [InstrumentSymbol, number | string];
-
-function InstrumentReelItem({ item }: { item: InstrumentReelItem }) {
-  const [symbol, lastQuote] = item;
-  const loading = lastQuote === "...";
-  const formattedQuote = parseFloat(lastQuote as string).toFixed(3);
+function InstrumentReelItem({ item }: { item: Instrument }) {
+  const { code, lastQuote } = item;
+  console.log("lastQuote", lastQuote);
+  const loading = !lastQuote;
+  const price = loading ? "..." : lastQuote?.toFixed(3);
   return (
     <div className="instrument">
-      <span className="instrument-name">{symbol}</span>
+      <span className="instrument-name">{code}</span>
       <span className={`instrument-quote ${loading ? "" : "loaded"}`}>
-        {loading ? "..." : formattedQuote}
+        {price}
       </span>
     </div>
   );
