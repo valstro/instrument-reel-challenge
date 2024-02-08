@@ -5,7 +5,7 @@
 /**
  * ✅ You can add/edit these imports
  */
-import React from "react";
+import React, { useEffect } from "react";
 import {
   InstrumentSymbol,
   Instrument,
@@ -33,37 +33,18 @@ function useInstruments(instrumentSymbols: InstrumentSymbol[]) {
   const [instruments, setInstruments] = React.useState<Instrument[]>(
     pendingInstruments as Instrument[]
   );
-  const [readyState, setReadyState] = React.useState<WebSocketReadyState>(0);
-
   const handleMessage = (newInstruments: Instrument[]) => {
     setInstruments(newInstruments);
   };
-
-  React.useEffect(() => {
-    const handleReadyStateChange = () => {
-      setReadyState(client.readyState());
-    };
-    setReadyState(client.readyState());
-    client.addEventListener("open", handleReadyStateChange);
-    client.addEventListener("close", handleReadyStateChange);
-    return () => {
-      client.removeEventListener("open", handleReadyStateChange);
-      client.removeEventListener("close", handleReadyStateChange);
-    };
-  }, []);
-
-  React.useEffect(() => {
-    if (readyState !== WebSocket.OPEN) {
-      return;
-    }
-    const unsubscribe = client.subscribeToSymbolUpdates(
+  useEffect(() => {
+    const unsubscribe = client.subscribeToInstruments(
       instrumentSymbols,
       handleMessage
     );
     return () => {
       unsubscribe();
     };
-  }, [instrumentSymbols, readyState]);
+  }, [instrumentSymbols]);
   return instruments;
 }
 
@@ -91,9 +72,8 @@ export interface InstrumentReelProps {
 
 function InstrumentReelItem({ item }: { item: Instrument }) {
   const { code, lastQuote } = item;
-  console.log("lastQuote", lastQuote);
   const loading = !lastQuote;
-  const price = loading ? "..." : lastQuote?.toFixed(3);
+  const price = loading ? "..." : lastQuote.toFixed(3);
   return (
     <div className="instrument">
       <span className="instrument-name">{code}</span>
