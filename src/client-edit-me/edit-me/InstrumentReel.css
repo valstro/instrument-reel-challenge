@@ -1,3 +1,84 @@
 /**
  * ✅ You can edit this file to add your own styles.
  */
+.instrument-reel {
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.instrument-reel-track {
+  display: inline-flex;
+  animation: slide-left 15s linear infinite;
+}
+
+.instrument-reel-backfill {
+  position: absolute;
+  left: 100%;
+}
+
+@keyframes slide-left {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.instrument-reel:hover .instrument-reel-track {
+  animation-play-state: paused;
+}
+
+.instrument {
+  padding: 10px;
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #555;
+  background-color: #222;
+}
+.instrument:hover {
+  background-color: #333;
+}
+.instrument span {
+  height: 18px;
+}
+img.instrument-icon {
+  height: 18px;
+  margin-right: 10px;
+  vertical-align: middle;
+}
+.instrument-name {
+  margin-right: 10px;
+  font-weight: bold;
+  min-width: 80px;
+  line-height: 18px;
+}
+.instrument.loaded .instrument-name {
+  min-width: 30px;
+  transition: min-width 3s;
+}
+.instrument-quote {
+  font-family: monospace;
+  text-align: right;
+  min-width: 70px;
+  color: green;
+}
+.instrument.negative .instrument-quote {
+  color: red;
+}
+.instrument-change {
+  font-family: monospace;
+  margin-left: 10px;
+  margin-right: 10px;
+  width: 50px;
+  text-align: right;
+  color: green;
+}
+.instrument.negative .instrument-change {
+  color: red;
+}
+.instrument.loaded .instrument-quote {
+  min-width: 30px;
+  transition: min-width 3s;
+}
