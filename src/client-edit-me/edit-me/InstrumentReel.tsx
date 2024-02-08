@@ -102,7 +102,7 @@ function InstrumentReel({ instrumentSymbols }: InstrumentReelProps) {
         ))}
         <div className="instrument-reel-backfill">
           {items.map((item, i) => (
-            <InstrumentReelItem key={i} item={item} />
+            <InstrumentReelItem key={`backfill-${i}`} item={item} />
           ))}
         </div>
       </div>
